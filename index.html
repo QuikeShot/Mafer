@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Cuenta regresiva épica</title>
+
+<style>
+@font-face {
+    font-family: "Astro";
+    src: url("winter_draw.otf");
+}
+
+body {
+    margin: 0;
+    background: radial-gradient(circle at center, #001a0f, #000);
+    color: #00ff88;
+    font-family: "Astro", Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* Fondo animado */
+body::before {
+    content: "";
+    position: absolute;
+    width: 200%;
+    height: 200%;
+    background: repeating-linear-gradient(
+        45deg,
+        rgba(0,255,136,0.05) 0px,
+        rgba(0,255,136,0.05) 2px,
+        transparent 2px,
+        transparent 40px
+    );
+    animation: moveBg 10s linear infinite;
+}
+
+@keyframes moveBg {
+    from { transform: translate(0,0); }
+    to { transform: translate(-200px, -200px); }
+}
+
+.timer {
+    text-align: center;
+    z-index: 2;
+}
+
+/* Números */
+.numbers {
+    font-size: 5rem;
+    letter-spacing: 5px;
+    text-shadow: 0 0 10px #00ff88, 0 0 30px #00ff88;
+    animation: pulse 1s infinite;
+}
+
+/* Pulso base */
+@keyframes pulse {
+    0% { transform: scale(1); text-shadow: 0 0 10px #00ff88; }
+    50% { transform: scale(1.05); text-shadow: 0 0 25px #00ff88; }
+    100% { transform: scale(1); text-shadow: 0 0 10px #00ff88; }
+}
+
+/* Últimos segundos más intensos */
+.critical {
+    color: #00ffcc;
+    animation: criticalPulse 0.3s infinite;
+}
+
+@keyframes criticalPulse {
+    0% { transform: scale(1); text-shadow: 0 0 10px #00ffcc; }
+    50% { transform: scale(1.2); text-shadow: 0 0 40px #00ffcc; }
+    100% { transform: scale(1); text-shadow: 0 0 10px #00ffcc; }
+}
+
+/* Shake */
+.shake {
+    animation: shake 0.3s;
+}
+
+@keyframes shake {
+    0% { transform: translate(0); }
+    25% { transform: translate(-5px, 5px); }
+    50% { transform: translate(5px, -5px); }
+    75% { transform: translate(-5px, -5px); }
+    100% { transform: translate(0); }
+}
+
+span {
+    margin: 0 10px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="timer">
+    <div class="numbers" id="timer">
+        <span id="days">00</span>d :
+        <span id="hours">00</span>h :
+        <span id="minutes">00</span>m :
+        <span id="seconds">00</span>s
+    </div>
+</div>
+
+<script>
+function getTargetDate() {
+    const now = new Date();
+    let year = now.getFullYear();
+
+    let target = new Date(year, 2, 21, 0, 0, 0);
+
+    if (now > target) {
+        target = new Date(year + 1, 2, 21, 0, 0, 0);
+    }
+
+    return target;
+}
+
+const targetDate = getTargetDate();
+const timerEl = document.getElementById("timer");
+
+function updateTimer() {
+    const now = new Date();
+    const diff = targetDate - now;
+
+    if (diff <= 0) {
+        clearInterval(timerInterval);
+
+        // efecto final antes de redirigir
+        timerEl.innerHTML = "🔥 00:00 🔥";
+
+        setTimeout(() => {
+            window.location.href = "flower.html";
+        }, 1500);
+
+        return;
+    }
+
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+    const minutes = Math.floor((diff / (1000 * 60)) % 60);
+    const seconds = Math.floor((diff / 1000) % 60);
+
+    document.getElementById("days").textContent = String(days).padStart(2, "0");
+    document.getElementById("hours").textContent = String(hours).padStart(2, "0");
+    document.getElementById("minutes").textContent = String(minutes).padStart(2, "0");
+    document.getElementById("seconds").textContent = String(seconds).padStart(2, "0");
+
+    // 🔥 efectos épicos
+    timerEl.classList.add("shake");
+    setTimeout(() => timerEl.classList.remove("shake"), 200);
+
+    // últimos 5 segundos
+    if (diff <= 5000) {
+        timerEl.classList.add("critical");
+    }
+}
+
+const timerInterval = setInterval(updateTimer, 1000);
+updateTimer();
+</script>
+
+</body>
+</html>
